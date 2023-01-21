@@ -1,15 +1,17 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
 
 public class Main {
+    static final int NMINES_L1 = 10;
+    static final int NMINES_L2 = 20;
+    static final int NMINES_L3 = 40;
+    static final int MIDA_L1 = 10;
+    static final int MIDA_L2 = 20;
+    static final int MIDA_L3 = 40;
+
     public static void main(String[] args) {
         int opcioMenu = mostrarMenu();
-        final int NMINES_L1 = 10;
-        final int NMINES_L2 = 20;
-        final int NMINES_L3 = 40;
-        final int MIDA_L1 = 10;
-        final int MIDA_L2 = 20;
-        final int MIDA_L3 = 40;
 
         switch (opcioMenu) {
             case 0 -> {
@@ -17,23 +19,55 @@ public class Main {
                 System.exit(0);
             }
             case 1 -> {
-                int opcioDificultat = demanarNivell();
-                switch (opcioDificultat) {
-                    case 1 -> {
-                        crearIDibuixarTaulellM(NMINES_L1, MIDA_L1);
-                    }
-                    case 2 -> {
-                        crearIDibuixarTaulellM(NMINES_L2, MIDA_L2);
-                    }
-                    case 3 -> {
-                        crearIDibuixarTaulellM(NMINES_L3, MIDA_L3);
-                    }
-                    default -> System.out.println("Opció no disponible. Entra una opció vàlida.");
+                int dificultat = demanarDificultat();
+
+                boolean[][] taulell = crearTaulellSegonsDificultat(dificultat);
+                if (taulell == null) {
+                    System.out.println("Error en la creació del taulell!");
+                    System.exit(-1);
                 }
 
+                if (jugar(taulell)) {
+                    System.out.println("Felicitats! Ets un/a campió/na!");
+                } else {
+                    System.out.println("Oh! Has perdut...");
+                }
+
+                dibuixarTaulell(taulell, null, true);
             }
         }
+    }
 
+    static boolean jugar(boolean[][] taulell) {
+        int casellesDisponibles = calcularCasellesDisponibles(taulell);
+
+        ArrayList<int[]> coordenadesJugades = new ArrayList<>();
+        do {
+            dibuixarTaulell(taulell, coordenadesJugades, false);
+
+            int[] coordenades = demanarCoordenades();
+            if (taulell[coordenades[0]][coordenades[1]]) { // Té bomba?
+                return false;
+            } else if (!coordenadaTrobada(coordenadesJugades, new int[]{coordenades[0], coordenades[1]})) { // Nova coordenada jugada
+                coordenadesJugades.add(coordenades);
+                casellesDisponibles -= 1;
+            }
+        } while (casellesDisponibles > 0);
+
+        return true;
+    }
+
+    static int calcularCasellesDisponibles(boolean[][] taulell) {
+        int casellesDisponibles = 0;
+
+        for (int i = 0; i < taulell.length; i++) {
+            for (int j = 0; j < taulell.length; j++) {
+                if (!taulell[i][j]) {
+                    casellesDisponibles += 1;
+                }
+            }
+        }
+        return casellesDisponibles;
     }
 
     static int mostrarMenu() {
@@ -50,7 +84,7 @@ public class Main {
         return opcioMenu;
     }
 
-    static int demanarNivell() {
+    static int demanarDificultat() {
         Scanner lector = new Scanner(System.in);
         System.out.println("""
                 ------------------------------------------------------
@@ -65,7 +99,27 @@ public class Main {
         return opcioDificultat;
     }
 
-    static boolean[][] crearIDibuixarTaulellM(int mines, int mida) { //Provisionalment ho tenim junt
+    static boolean[][] crearTaulellSegonsDificultat(int dificultat) {
+        boolean[][] taulell;
+        switch (dificultat) {
+            case 1 -> {
+                taulell = crearTaulell(NMINES_L1, MIDA_L1);
+            }
+            case 2 -> {
+                taulell = crearTaulell(NMINES_L2, MIDA_L2);
+            }
+            case 3 -> {
+                taulell = crearTaulell(NMINES_L3, MIDA_L3);
+            }
+            default -> {
+                taulell = null;
+            }
+        }
+
+        return taulell;
+    }
+
+    static boolean[][] crearTaulell(int mines, int mida) { //Provisionalment ho tenim junt
         //Creem taulell de mines
         boolean[][] taulell = new boolean[mida][mida];
         Random r = new Random();
@@ -85,17 +139,51 @@ public class Main {
             }
         } while (minesPosades < mines);
 
-        for (int i = 0; i < mida; i++) {
-            for (int j = 0; j < mida; j++) {
-                if (!taulell[i][j]){
-                    System.out.print(" O ");
-                }else System.out.print(" X ");
+        return taulell;
+    }
+
+    static void dibuixarTaulell(boolean[][] taulell, ArrayList<int[]> coordenadesJugades, boolean mostrarSolucio) {
+        for (int i = 0; i < taulell.length; i++) {
+            for (int j = 0; j < taulell.length; j++) {
+                if (mostrarSolucio) {
+                    if (!taulell[i][j]) {
+                        System.out.print(" O ");
+                    } else {
+                        System.out.print(" X ");
+                    }
+                } else {
+                    if (coordenadaTrobada(coordenadesJugades, new int[]{i, j})) {
+                        if (!taulell[i][j]) {
+                            System.out.print(" # ");
+                        } else {
+                            System.out.print(" X ");
+                        }
+                    } else {
+                        System.out.print(" O ");
+                    }
+                }
             }
             System.out.println();
         }
-        return taulell;
     }
-    static void mostrarTaulellM() {
 
+    static boolean coordenadaTrobada(ArrayList<int[]> coordenades, int[] coordenada) {
+        boolean trobat = false;
+        for (int k = 0; k < coordenades.size() && !trobat; k++) {
+            if (coordenades.get(k)[0] == coordenada[0] &&
+                    coordenades.get(k)[1] == coordenada[1]) {
+                trobat = true;
+            }
+        }
+        return trobat;
+    }
+
+    static int[] demanarCoordenades() {
+        Scanner lector = new Scanner(System.in);
+        System.out.println("Entra la coordenada X: ");
+        int x = Integer.parseInt(lector.nextLine());
+        System.out.println("Entra la coordenada Y: ");
+        int y = Integer.parseInt(lector.nextLine());
+        return new int[]{x - 1, y - 1};
     }
 }
