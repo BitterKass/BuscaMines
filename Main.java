@@ -38,25 +38,6 @@ public class Main {
         }
     }
 
-    static boolean jugar(boolean[][] taulell) {
-        int casellesDisponibles = calcularCasellesDisponibles(taulell);
-
-        ArrayList<int[]> coordenadesJugades = new ArrayList<>();
-        do {
-            dibuixarTaulell(taulell, coordenadesJugades, false);
-
-            int[] coordenades = demanarCoordenades();
-            if (taulell[coordenades[0]][coordenades[1]]) { // Té bomba?
-                return false;
-            } else if (!coordenadaTrobada(coordenadesJugades, new int[]{coordenades[0], coordenades[1]})) { // Nova coordenada jugada
-                coordenadesJugades.add(coordenades);
-                casellesDisponibles -= 1;
-            }
-        } while (casellesDisponibles > 0);
-
-        return true;
-    }
-
     static int calcularCasellesDisponibles(boolean[][] taulell) {
         int casellesDisponibles = 0;
 
@@ -100,16 +81,20 @@ public class Main {
     }
 
     static boolean[][] crearTaulellSegonsDificultat(int dificultat) {
-        boolean[][] taulell;
+        boolean[][] taulellM;
+        boolean[][] taulellJ;
         switch (dificultat) {
             case 1 -> {
-                taulell = crearTaulell(NMINES_L1, MIDA_L1);
+                taulellM = crearTaulellM(NMINES_L1, MIDA_L1);
+                taulellJ = crearTaulellM(NMINES_L1, MIDA_L1);
             }
             case 2 -> {
-                taulell = crearTaulell(NMINES_L2, MIDA_L2);
+                taulellM = crearTaulellM(NMINES_L2, MIDA_L2);
+                taulellJ = crearTaulellM(NMINES_L2, MIDA_L2);
             }
             case 3 -> {
-                taulell = crearTaulell(NMINES_L3, MIDA_L3);
+                taulellM = crearTaulellM(NMINES_L3, MIDA_L3);
+                taulellJ = crearTaulellM(NMINES_L3, MIDA_L3);
             }
             default -> {
                 taulell = null;
@@ -119,7 +104,7 @@ public class Main {
         return taulell;
     }
 
-    static boolean[][] crearTaulell(int mines, int mida) { //Provisionalment ho tenim junt
+    static boolean[][] crearTaulellM(int mines, int mida) { //Provisionalment ho tenim junt
         //Creem taulell de mines
         boolean[][] taulell = new boolean[mida][mida];
         Random r = new Random();
@@ -142,7 +127,47 @@ public class Main {
         return taulell;
     }
 
-    static void dibuixarTaulell(boolean[][] taulell, ArrayList<int[]> coordenadesJugades, boolean mostrarSolucio) {
+    static boolean[][] crearTaulellM(int mines, int mida) { //Provisionalment ho tenim junt
+        //Creem taulell de mines
+        boolean[][] taulellM = new boolean[mida][mida];
+        Random r = new Random();
+        int coorX = 0;
+        int coorY = 0;
+        //Inicialitzem comptador de mines (0 abans de començar)
+        int minesPosades = 0;
+
+        do {
+            //Generem coordenades aleatòries vàlides
+            coorX = r.nextInt(0, mida - 1);
+            coorY = r.nextInt(0, mida - 1);
+            //Comprovem si no hi ha mina, i si no hi ha mina la posem i comptem que l'hem posat
+            if (!taulellM[coorX][coorY]) {
+                taulellM[coorX][coorY] = true;
+                minesPosades++;
+            }
+        } while (minesPosades < mines);
+
+        return taulellM;
+    }
+
+    static boolean[][] crearTaulellJ(int mines, int mida) { //Provisionalment ho tenim junt
+        //Creem taulell de mines
+        boolean[][] taulellJ = new boolean[mida][mida];
+        int coorX = 0;
+        int coorY = 0;
+        int casellesDisponibles = mida * mida - mines
+
+        do {
+            //Comprovem si no hi ha mina, i si no hi ha mina la posem i comptem que l'hem posat
+            if (!taulellJ[coorX][coorY]) {
+                taulellJ[coorX][coorY] = true;
+                casellesDisponibles++;
+            }
+        } while (casellesDisponibles > 0);
+
+        return taulellJ;
+    }
+/*    static void dibuixarTaulell(boolean[][] taulell, ArrayList<int[]> coordenadesJugades, boolean mostrarSolucio) {
         for (int i = 0; i < taulell.length; i++) {
             for (int j = 0; j < taulell.length; j++) {
                 if (mostrarSolucio) {
@@ -165,18 +190,8 @@ public class Main {
             }
             System.out.println();
         }
-    }
+    }*/
 
-    static boolean coordenadaTrobada(ArrayList<int[]> coordenades, int[] coordenada) {
-        boolean trobat = false;
-        for (int k = 0; k < coordenades.size() && !trobat; k++) {
-            if (coordenades.get(k)[0] == coordenada[0] &&
-                    coordenades.get(k)[1] == coordenada[1]) {
-                trobat = true;
-            }
-        }
-        return trobat;
-    }
 
     static int[] demanarCoordenades() {
         Scanner lector = new Scanner(System.in);
