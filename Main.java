@@ -21,34 +21,21 @@ public class Main {
             case 1 -> {
                 int dificultat = demanarDificultat();
 
-                boolean[][] taulell = crearTaulellSegonsDificultat(dificultat);
-                if (taulell == null) {
+                boolean[][] taulellM = crearTaulellSegonsDificultatM(dificultat);
+                boolean[][] taulellJ = crearTaulellSegonsDificultatJ(dificultat);
+
+                if (taulellM == null) {
                     System.out.println("Error en la creació del taulell!");
                     System.exit(-1);
                 }
-
-                if (jugar(taulell)) {
+                if (jugar(taulellJ, taulellM)) {
                     System.out.println("Felicitats! Ets un/a campió/na!");
                 } else {
                     System.out.println("Oh! Has perdut...");
-                }
-
-                dibuixarTaulell(taulell, null, true);
-            }
-        }
-    }
-
-    static int calcularCasellesDisponibles(boolean[][] taulell) {
-        int casellesDisponibles = 0;
-
-        for (int i = 0; i < taulell.length; i++) {
-            for (int j = 0; j < taulell.length; j++) {
-                if (!taulell[i][j]) {
-                    casellesDisponibles += 1;
+                    dibuixarTaulellM(taulellM);
                 }
             }
         }
-        return casellesDisponibles;
     }
 
     static int mostrarMenu() {
@@ -80,51 +67,44 @@ public class Main {
         return opcioDificultat;
     }
 
-    static boolean[][] crearTaulellSegonsDificultat(int dificultat) {
+    static boolean[][] crearTaulellSegonsDificultatM(int dificultat) {
         boolean[][] taulellM;
-        boolean[][] taulellJ;
         switch (dificultat) {
             case 1 -> {
                 taulellM = crearTaulellM(NMINES_L1, MIDA_L1);
-                taulellJ = crearTaulellM(NMINES_L1, MIDA_L1);
+
             }
             case 2 -> {
                 taulellM = crearTaulellM(NMINES_L2, MIDA_L2);
-                taulellJ = crearTaulellM(NMINES_L2, MIDA_L2);
             }
             case 3 -> {
                 taulellM = crearTaulellM(NMINES_L3, MIDA_L3);
-                taulellJ = crearTaulellM(NMINES_L3, MIDA_L3);
             }
             default -> {
-                taulell = null;
+                taulellM = null;
             }
         }
 
-        return taulell;
+        return taulellM;
     }
-
-    static boolean[][] crearTaulellM(int mines, int mida) { //Provisionalment ho tenim junt
-        //Creem taulell de mines
-        boolean[][] taulell = new boolean[mida][mida];
-        Random r = new Random();
-        int coorX = 0;
-        int coorY = 0;
-        //Inicialitzem comptador de mines (0 abans de començar)
-        int minesPosades = 0;
-
-        do {
-            //Generem coordenades aleatòries vàlides
-            coorX = r.nextInt(0, mida - 1);
-            coorY = r.nextInt(0, mida - 1);
-            //Comprovem si no hi ha mina, i si no hi ha mina la posem i comptem que l'hem posat
-            if (!taulell[coorX][coorY]) {
-                taulell[coorX][coorY] = true;
-                minesPosades++;
+    static boolean[][] crearTaulellSegonsDificultatJ(int dificultat) {
+        boolean[][] taulellJ;
+        switch (dificultat) {
+            case 1 -> {
+                taulellJ = crearTaulellJ(MIDA_L1);
             }
-        } while (minesPosades < mines);
+            case 2 -> {
+                taulellJ = crearTaulellJ(MIDA_L2);
+            }
+            case 3 -> {
+                taulellJ = crearTaulellJ(MIDA_L3);
+            }
+            default -> {
+                taulellJ = null;
+            }
+        }
 
-        return taulell;
+        return taulellJ;
     }
 
     static boolean[][] crearTaulellM(int mines, int mida) { //Provisionalment ho tenim junt
@@ -150,47 +130,75 @@ public class Main {
         return taulellM;
     }
 
-    static boolean[][] crearTaulellJ(int mines, int mida) { //Provisionalment ho tenim junt
+    static boolean[][] crearTaulellJ(int mida) { //Provisionalment ho tenim junt
         //Creem taulell de mines
         boolean[][] taulellJ = new boolean[mida][mida];
+        return taulellJ;
+    }
+
+    static boolean jugar(boolean[][] taulellJ, boolean[][] taulellM) {
         int coorX = 0;
         int coorY = 0;
-        int casellesDisponibles = mida * mida - mines
+        int mida = taulellJ.length;
+        int mines = 0;
+        int cont = 0;
+        do {
+            for (int i = 0; i < taulellM.length; i++) {
+                for (int j = 0; j < taulellM.length; j++) {
+                    if (taulellM[i][j]) {
+                        mines++;
+                    }
+                    cont++;
+                }
+            }
+        }while (cont < mida);
+        int casellesDisponibles = mida * mida - mines;
 
         do {
+            dibuixarTaulellJ(taulellJ);
+            int[] coordenades = demanarCoordenades();
+            coorX = coordenades[0];
+            coorY = coordenades[1];
+            if (taulellM[coorX][coorY]) {
+                return false;
+            }
             //Comprovem si no hi ha mina, i si no hi ha mina la posem i comptem que l'hem posat
             if (!taulellJ[coorX][coorY]) {
                 taulellJ[coorX][coorY] = true;
-                casellesDisponibles++;
-            }
-        } while (casellesDisponibles > 0);
+                casellesDisponibles--;
+            } else System.out.println("Ja has entrat aquesta casella");
 
-        return taulellJ;
+        } while (casellesDisponibles > 0);
+        return true;
     }
-/*    static void dibuixarTaulell(boolean[][] taulell, ArrayList<int[]> coordenadesJugades, boolean mostrarSolucio) {
-        for (int i = 0; i < taulell.length; i++) {
-            for (int j = 0; j < taulell.length; j++) {
-                if (mostrarSolucio) {
-                    if (!taulell[i][j]) {
-                        System.out.print(" O ");
-                    } else {
-                        System.out.print(" X ");
-                    }
+
+    static void dibuixarTaulellJ(boolean[][] taulellJ) {
+        for (int i = 0; i < taulellJ.length; i++) {
+            for (int j = 0; j < taulellJ.length; j++) {
+                if (taulellJ[i][j]) {
+                    System.out.print(" # ");
                 } else {
-                    if (coordenadaTrobada(coordenadesJugades, new int[]{i, j})) {
-                        if (!taulell[i][j]) {
-                            System.out.print(" # ");
-                        } else {
-                            System.out.print(" X ");
-                        }
-                    } else {
-                        System.out.print(" O ");
-                    }
+                    System.out.print(" 0 ");
                 }
             }
             System.out.println();
         }
-    }*/
+        System.out.println();
+    }
+    static void dibuixarTaulellM(boolean[][] taulellM) {
+        for (int i = 0; i < taulellM.length; i++) {
+            for (int j = 0; j < taulellM.length; j++) {
+                if (taulellM[i][j]) {
+                    System.out.print(" X ");
+                } else {
+                    System.out.print(" 0 ");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
 
 
     static int[] demanarCoordenades() {
