@@ -87,6 +87,7 @@ public class Main {
 
         return taulellM;
     }
+
     static boolean[][] crearTaulellSegonsDificultatJ(int dificultat) {
         boolean[][] taulellJ;
         switch (dificultat) {
@@ -151,12 +152,12 @@ public class Main {
                     cont++;
                 }
             }
-        }while (cont < mida);
+        } while (cont < mida);
         int casellesDisponibles = mida * mida - mines;
 
         do {
             dibuixarTaulellJ(taulellJ);
-            int[] coordenades = demanarCoordenades();
+            int[] coordenades = demanarCoordenades(taulellJ);
             coorX = coordenades[0];
             coorY = coordenades[1];
             if (taulellM[coorX][coorY]) {
@@ -185,6 +186,7 @@ public class Main {
         }
         System.out.println();
     }
+
     static void dibuixarTaulellM(boolean[][] taulellM) {
         for (int i = 0; i < taulellM.length; i++) {
             for (int j = 0; j < taulellM.length; j++) {
@@ -200,13 +202,29 @@ public class Main {
     }
 
 
-
-    static int[] demanarCoordenades() {
+    static int[] demanarCoordenades(boolean[][] taulellJ) {
+        boolean error = false;
+        int coorX = 0;
+        int coorY = 0;
         Scanner lector = new Scanner(System.in);
-        System.out.println("Entra la coordenada X: ");
-        int x = Integer.parseInt(lector.nextLine());
-        System.out.println("Entra la coordenada Y: ");
-        int y = Integer.parseInt(lector.nextLine());
-        return new int[]{x - 1, y - 1};
+        do {
+            error = false;
+            try {
+                System.out.println("Entra la coordenada X: ");
+                coorX = Integer.parseInt(lector.nextLine());
+                System.out.println("Entra la coordenada Y: ");
+                coorY = Integer.parseInt(lector.nextLine());
+                coorX --;
+                coorY --;
+                if (taulellJ[coorX][coorY] == true){
+                    System.out.println("Hi ha una mina!!");
+                }else System.out.println("No hi ha una mina");
+
+            } catch (Exception e) {
+                System.out.println("Vigila de no introduir nombres que exedeixin el tamany del taulell(0 i nombres negatius inclosos) i tambe no entris lletres o altres caracters similars!!");
+                error = true;
+            }
+        } while (error == true);
+        return new int[]{coorX, coorY};
     }
 }
