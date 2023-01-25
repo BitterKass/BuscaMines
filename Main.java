@@ -201,7 +201,13 @@ public class Main {
     }
 
     static void dibuixarTaulellJ(boolean[][] taulellJ) {
+        System.out.print("  ");
+        for (int i = 0; i < taulellJ.length; i++){
+            System.out.print(" "+(i+1)+" ");
+        }
+        System.out.println();
         for (int i = 0; i < taulellJ.length; i++) {
+            System.out.print(i+1 +" ");
             for (int j = 0; j < taulellJ.length; j++) {
                 if (taulellJ[i][j]) {
                     System.out.print(" # ");
