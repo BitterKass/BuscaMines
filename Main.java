@@ -184,7 +184,7 @@ public class Main {
 
         do {
             dibuixarTaulellJ(taulellJ);
-            int[] coordenades = demanarCoordenades(taulellJ);
+            int[] coordenades = demanarCoordenades(taulellJ, mida);
             coorX = coordenades[0];
             coorY = coordenades[1];
             if (taulellM[coorX][coorY]) {
@@ -229,10 +229,11 @@ public class Main {
     }
 
 
-    static int[] demanarCoordenades(boolean[][] taulellJ) {
+    static int[] demanarCoordenades(boolean[][] taulellJ,int mida) {
         boolean error = false;
         int coorX = 0;
         int coorY = 0;
+
         Scanner lector = new Scanner(System.in);
         do {
             error = false;
@@ -241,17 +242,15 @@ public class Main {
                 coorX = Integer.parseInt(lector.nextLine());
                 System.out.println("Entra la coordenada Y: ");
                 coorY = Integer.parseInt(lector.nextLine());
-                coorX --;
-                coorY --;
-                if (taulellJ[coorX][coorY] == true){
-                    System.out.println("Hi ha una mina!!");
-                }else System.out.println("No hi ha una mina");
+
+                if (coorX <= 0 || coorX > mida || coorY <= 0 || coorY > mida)
+                    throw new Exception();
 
             } catch (Exception e) {
                 System.out.println("Vigila de no introduir nombres que exedeixin el tamany del taulell(0 i nombres negatius inclosos) i tambe no entris lletres o altres caracters similars!!");
                 error = true;
             }
         } while (error == true);
-        return new int[]{coorX, coorY};
+        return new int[]{coorX -1, coorY-1};
     }
 }
