@@ -4,66 +4,94 @@ import java.util.Random;
 
 public class Main {
     static final int NMINES_L1 = 10;
-    static final int NMINES_L2 = 20;
-    static final int NMINES_L3 = 40;
-    static final int MIDA_L1 = 10;
-    static final int MIDA_L2 = 20;
-    static final int MIDA_L3 = 40;
+    static final int NMINES_L2 = 40;
+    static final int NMINES_L3 = 99;
+    static final int MIDA_L1 = 8;
+    static final int MIDA_L2 = 16;
+    static final int MIDA_L3 = 22;
 
     public static void main(String[] args) {
-        int opcioMenu = mostrarMenu();
 
-        switch (opcioMenu) {
-            case 0 -> {
-                System.out.println("Fins aviat!");
-                System.exit(0);
-            }
-            case 1 -> {
-                int dificultat = demanarDificultat();
-
-                boolean[][] taulellM = crearTaulellSegonsDificultatM(dificultat);
-                boolean[][] taulellJ = crearTaulellSegonsDificultatJ(dificultat);
-
-                if (taulellM == null) {
-                    System.out.println("Error en la creació del taulell!");
-                    System.exit(-1);
+        int opcioMenu;
+        do {
+            opcioMenu = mostrarIGestionarMenu();
+            switch (opcioMenu) {
+                case 0 -> {
+                    System.out.println("Fins aviat!");
                 }
-                if (jugar(taulellJ, taulellM)) {
-                    System.out.println("Felicitats! Ets un/a campió/na!");
-                } else {
-                    System.out.println("Oh! Has perdut...");
-                    dibuixarTaulellM(taulellM);
+                case 1 -> {
+                    int dificultat = demanarDificultat();
+
+                    boolean[][] taulellM = crearTaulellSegonsDificultatM(dificultat);
+                    boolean[][] taulellJ = crearTaulellSegonsDificultatJ(dificultat);
+
+                    if (taulellM == null) {
+                        System.out.println("Error en la creació del taulell!");
+                    }
+                    if (jugar(taulellJ, taulellM)) {
+                        System.out.println("Felicitats! Ets un/a campió/na!");
+                    } else {
+                        System.out.println("Oh! Has perdut...");
+                        dibuixarTaulellM(taulellM);
+                    }
                 }
+                default -> System.out.println("Opció no vàlida.");
             }
-        }
+        } while (opcioMenu != 0);
     }
 
-    static int mostrarMenu() {
+    static int mostrarIGestionarMenu() {
+        int opcioMenu = 0;
+        boolean error = false;
         Scanner lector = new Scanner(System.in);
-        System.out.println("""
-                --------------------Menú Buscamines-------------------
-                ------------------------------------------------------
-                ------------------Selecciona una opció----------------
-                                   1-> Jugar Partida
-                                   0-> Sortir del Joc
-                ------------------------------------------------------
-                """);
-        int opcioMenu = Integer.parseInt(lector.nextLine());
+        do {
+            error = false;
+            System.out.println("""
+                    --------------------Menú Buscamines-------------------
+                    ------------------------------------------------------
+                    ------------------Selecciona una opció----------------
+                                       1-> Jugar Partida
+                                       0-> Sortir del Joc
+                    ------------------------------------------------------
+                    """);
+            try {
+                opcioMenu = Integer.parseInt(lector.nextLine());
+
+            } catch (Exception eOpcioMenu) {
+                System.out.println("Les dades introduïdes no són correctes. Has d'introduir un número enter vàlid.");
+                error = true;
+                System.out.println();
+            }
+        } while (error);
         return opcioMenu;
     }
 
     static int demanarDificultat() {
+        int opcioDificultat = 0;
+        boolean error = false;
         Scanner lector = new Scanner(System.in);
-        System.out.println("""
-                ------------------------------------------------------
-                ---------------Selecciona una dificultat--------------
-                ------------------------------------------------------
-                                   1-> Fàcil
-                                   2-> Intermig
-                                   3-> Difícil
-                ------------------------------------------------------
-                """);
-        int opcioDificultat = Integer.parseInt(lector.nextLine());
+        do {
+            error = false;
+            System.out.println("""
+                    ------------------------------------------------------
+                    ---------------Selecciona una dificultat--------------
+                    ------------------------------------------------------
+                                       1-> Fàcil
+                                       2-> Intermig
+                                       3-> Difícil
+                    ------------------------------------------------------
+                    """);
+            try {
+                opcioDificultat = Integer.parseInt(lector.nextLine());
+                if (opcioDificultat <= 0 || opcioDificultat > 3) {
+                    throw new Exception();
+                }
+            } catch (Exception eOpcioDificultat) {
+                System.out.println("Les dades introduïdes no són correctes. Has d'introduir un número enter vàlid.");
+                error = true;
+                System.out.println();
+            }
+        } while (error);
         return opcioDificultat;
     }
 
@@ -72,7 +100,6 @@ public class Main {
         switch (dificultat) {
             case 1 -> {
                 taulellM = crearTaulellM(NMINES_L1, MIDA_L1);
-
             }
             case 2 -> {
                 taulellM = crearTaulellM(NMINES_L2, MIDA_L2);
