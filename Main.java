@@ -184,6 +184,7 @@ public class Main {
 
         do {
             dibuixarTaulellJ(taulellJ);
+            dibuixarTaulellM(taulellM);
             int[] coordenades = demanarCoordenades(taulellJ, mida);
             coorX = coordenades[0];
             coorY = coordenades[1];
@@ -221,7 +222,13 @@ public class Main {
     }
 
     static void dibuixarTaulellM(boolean[][] taulellM) {
+        System.out.print("  ");
+        for (int i = 0; i < taulellM.length; i++){
+            System.out.print(" "+(i+1)+" ");
+        }
+        System.out.println();
         for (int i = 0; i < taulellM.length; i++) {
+            System.out.print(i+1 +" ");
             for (int j = 0; j < taulellM.length; j++) {
                 if (taulellM[i][j]) {
                     System.out.print(" X ");
@@ -257,6 +264,6 @@ public class Main {
                 error = true;
             }
         } while (error == true);
-        return new int[]{coorX -1, coorY-1};
+        return new int[]{coorY -1, coorX-1};
     }
 }
