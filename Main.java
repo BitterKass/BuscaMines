@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
 
@@ -16,9 +15,7 @@ public class Main {
         do {
             opcioMenu = mostrarIGestionarMenu();
             switch (opcioMenu) {
-                case 0 -> {
-                    System.out.println("Fins aviat!");
-                }
+                case 0 -> System.out.println("Fins aviat!");
                 case 1 -> {
                     int dificultat = demanarDificultat();
 
@@ -42,7 +39,7 @@ public class Main {
 
     static int mostrarIGestionarMenu() {
         int opcioMenu = 0;
-        boolean error = false;
+        boolean error;
         Scanner lector = new Scanner(System.in);
         do {
             error = false;
@@ -68,7 +65,7 @@ public class Main {
 
     static int demanarDificultat() {
         int opcioDificultat = 0;
-        boolean error = false;
+        boolean error;
         Scanner lector = new Scanner(System.in);
         do {
             error = false;
@@ -98,18 +95,10 @@ public class Main {
     static boolean[][] crearTaulellSegonsDificultatM(int dificultat) {
         boolean[][] taulellM;
         switch (dificultat) {
-            case 1 -> {
-                taulellM = crearTaulellM(NMINES_L1, MIDA_L1);
-            }
-            case 2 -> {
-                taulellM = crearTaulellM(NMINES_L2, MIDA_L2);
-            }
-            case 3 -> {
-                taulellM = crearTaulellM(NMINES_L3, MIDA_L3);
-            }
-            default -> {
-                taulellM = null;
-            }
+            case 1 -> taulellM = crearTaulellM(NMINES_L1, MIDA_L1);
+            case 2 -> taulellM = crearTaulellM(NMINES_L2, MIDA_L2);
+            case 3 -> taulellM = crearTaulellM(NMINES_L3, MIDA_L3);
+            default -> taulellM = null;
         }
 
         return taulellM;
@@ -118,20 +107,11 @@ public class Main {
     static boolean[][] crearTaulellSegonsDificultatJ(int dificultat) {
         boolean[][] taulellJ;
         switch (dificultat) {
-            case 1 -> {
-                taulellJ = crearTaulellJ(MIDA_L1);
-            }
-            case 2 -> {
-                taulellJ = crearTaulellJ(MIDA_L2);
-            }
-            case 3 -> {
-                taulellJ = crearTaulellJ(MIDA_L3);
-            }
-            default -> {
-                taulellJ = null;
-            }
+            case 1 -> taulellJ = crearTaulellJ(MIDA_L1);
+            case 2 -> taulellJ = crearTaulellJ(MIDA_L2);
+            case 3 -> taulellJ = crearTaulellJ(MIDA_L3);
+            default -> taulellJ = null;
         }
-
         return taulellJ;
     }
 
@@ -139,8 +119,8 @@ public class Main {
         //Creem taulell de mines
         boolean[][] taulellM = new boolean[mida][mida];
         Random r = new Random();
-        int coorX = 0;
-        int coorY = 0;
+        int coorX;
+        int coorY;
         //Inicialitzem comptador de mines (0 abans de començar)
         int minesPosades = 0;
 
@@ -159,14 +139,13 @@ public class Main {
     }
 
     static boolean[][] crearTaulellJ(int mida) { //Provisionalment ho tenim junt
-        //Creem taulell de mines
-        boolean[][] taulellJ = new boolean[mida][mida];
-        return taulellJ;
+        //Creem taulell de mines JANIRA!!(El return new boolean[][] retorna les dades de l'array de booleans creat i les guardes a l'array on crides el metode)
+        return new boolean[mida][mida];
     }
 
     static boolean jugar(boolean[][] taulellJ, boolean[][] taulellM) {
-        int coorX = 0;
-        int coorY = 0;
+        int coorX;
+        int coorY;
         int mida = taulellJ.length;
         int mines = 0;
         int cont = 0;
@@ -181,11 +160,10 @@ public class Main {
             }
         } while (cont < mida);
         int casellesDisponibles = mida * mida - mines;
-
         do {
             dibuixarTaulellJ(taulellJ);
             dibuixarTaulellM(taulellM);
-            int[] coordenades = demanarCoordenades(taulellJ, mida);
+            int[] coordenades = demanarCoordenades(mida);
             coorX = coordenades[0];
             coorY = coordenades[1];
             if (taulellM[coorX][coorY]) {
@@ -195,6 +173,7 @@ public class Main {
             if (!taulellJ[coorX][coorY]) {
                 taulellJ[coorX][coorY] = true;
                 casellesDisponibles--;
+                System.out.println("Queden "+ casellesDisponibles + " caselles disponibles!!");
             } else System.out.println("Ja has entrat aquesta casella");
 
         } while (casellesDisponibles > 0);
@@ -242,8 +221,8 @@ public class Main {
     }
 
 
-    static int[] demanarCoordenades(boolean[][] taulellJ,int mida) {
-        boolean error = false;
+    static int[] demanarCoordenades(int mida) {
+        boolean error;
         int coorX = 0;
         int coorY = 0;
 
@@ -263,7 +242,7 @@ public class Main {
                 System.out.println("Vigila de no introduir nombres que exedeixin el tamany del taulell(0 i nombres negatius inclosos) i tambe no entris lletres o altres caracters similars!!");
                 error = true;
             }
-        } while (error == true);
+        } while (error);
         return new int[]{coorY -1, coorX-1};
     }
 }
