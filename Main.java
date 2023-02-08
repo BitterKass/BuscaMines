@@ -162,7 +162,7 @@ public class Main {
         int casellesDisponibles = mida * mida - mines;
         do {
             dibuixarTaulellJ(taulellJ);
-            dibuixarTaulellM(taulellM);
+            //dibuixarTaulellM(taulellM);
             int[] coordenades = demanarCoordenades(mida);
             coorX = coordenades[0];
             coorY = coordenades[1];
